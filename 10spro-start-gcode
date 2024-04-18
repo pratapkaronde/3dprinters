@@ -1,3 +1,8 @@
+'CR10s-Pro V2 - Custom start g-code for Cura 
+
+;Print Temperature - {material_print_temperature} 
+;Bed Temperature -   {material_bed_temperature}
+
 M201 X500.00 Y500.00 Z100.00 E5000.00 ;Setup machine max acceleration
 M203 X500.00 Y500.00 Z10.00 E50.00 ;Setup machine max feedrate
 M204 P500.00 R1000.00 T500.00 ;Setup Print/Retract/Travel acceleration
@@ -5,16 +10,37 @@ M205 X8.00 Y8.00 Z0.40 E5.00 ;Setup Jerk
 M220 S100 ;Reset Feedrate
 M221 S100 ;Reset Flowrate
 
+M117 Heating Bed...
+M140 S{material_bed_temperature_layer_0} ; Set Heat Bed temperature
+M104 S160; start warming extruder to 160 to avoid leaking 
+M190 S{material_bed_temperature_layer_0} ; Wait for Heat Bed temperature
+
+M117 Homing...
 G28 ;Home
+M117 Bed Levelling...
 G29 ;Auto bed Level
 M420 S1 ;Save and use mesh
 
+; G1 X0 Y0 F2000 ; move to X0 Y0 ; Move to home before heating extruder all the way up
+
+M117 Heating Extruder...
+M109 S{material_print_temperature_layer_0} ; Set Extruder temperature. Wait till there
+
+M117 Purge Line...
 G92 E0 ;Reset Extruder
 G1 Z2.0 F3000 ;Move Z Axis up
-G1 X10.1 Y20 Z0.28 F5000.0 ;Move to start position
-G1 X10.1 Y200.0 Z0.28 F1500.0 E15 ;Draw the first line
-G1 X10.4 Y200.0 Z0.28 F5000.0 ;Move to side a little
-G1 X10.4 Y20 Z0.28 F1500.0 E30 ;Draw the second line
+
+G1 X290 Y280 Z0.28 F5000.0; Move to back right corner 
+G1 X290 Y100 Z0.28 F1500.0 E15; Draw the first line 
+G1 289.7 Y100 Z0.28 F5000.0; move to side by 0.3 mm
+G1 289.7 Y280 Z0.28 F1500.0 E30; Draw the second line 
+
+;G1 X10.1 Y20 Z0.28 F5000.0 ;Move to start position
+;G1 X10.1 Y200.0 Z0.28 F1500.0 E15 ;Draw the first line
+;G1 X10.4 Y200.0 Z0.28 F5000.0 ;Move to side a little
+;G1 X10.4 Y20 Z0.28 F1500.0 E30 ;Draw the second line
+
 G92 E0 ;Reset Extruder
 G1 Z2.0 F3000 ;Move Z Axis up
+M117 Printing...
 
